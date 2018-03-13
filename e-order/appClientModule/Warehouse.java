@@ -17,8 +17,9 @@ public class Warehouse {
 		String query= "select * from dbassembly.warehouses where wh_name = '"
 				+ nameWarehouse
 				+"'";
+		
 		resultset=myConnector.getData(query);
-		JOptionPane.showMessageDialog(null, "dud" );
+		
 		try {
 			if(resultset.isBeforeFirst()) return true;
 		} catch (SQLException e) { e.printStackTrace();	}
@@ -80,11 +81,40 @@ public class Warehouse {
 					frame.repaint();
 					
 					checkBoxesPanel.remove(i);
+					
+					if(isBillComplited(billNumber, warehouseName)) {
+						query = "UPDATE dbassembly.assembly SET state = 1 "
+								+ "WHERE id_warehouse = ( "
+								+ "Select id_warehouse from dbassembly.warehouses where wh_name = '"+warehouseName+"')";
+						
+					myConnector.sendData(query);
+					}					
+					
+					myConnector.closeConnection();
 				}
 				
 			}
 		}
 		myConnector.closeConnection();
+	}
+	
+	static boolean isBillComplited(String billNumber, String warehouseName){
+		String query ="SELECT * from wh_works where id_assembly = ("
+				+ "Select id_assembly from dbassembly.assembly where number = '"+billNumber+"')"
+				+ "and id_warehouse = ("
+				+ "Select id_warehouse from dbassembly.warehouses where wh_name = '"+warehouseName+"')";
+		
+		MysqlConnector myConnector = new MysqlConnector();
+		ResultSet resultSet;
+		resultSet = myConnector.getData(query);
+				
+		try {
+			if (!resultSet.isBeforeFirst())
+				return true;			
+		} catch (SQLException e) { e.printStackTrace(); }
+		
+		return false;
+		
 	}
 	
 	public Warehouse() {

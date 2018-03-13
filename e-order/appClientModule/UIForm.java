@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,8 +22,9 @@ public class UIForm {
 	ResultSet resultset;
 	Bill currentBill = new Bill();	
 	JTable clientMonitorTable = new JTable ();	
-		
+	JTable rulerTable = new JTable();	
 	
+			
 	void createCheckBoxes(JPanel tabPanel) {
 		MysqlConnector myConnector = new MysqlConnector();
 		ResultSet warehouses;	
@@ -66,53 +66,56 @@ public class UIForm {
 		currentPanel.updateUI();
 	}
 	
+	void refreshRulerTabelData() {
+		String query = "Select number FROM dbassembly.assembly WHERE state=0";
+		DataTable dataTable = new DataTable(query);
+		rulerTable.setModel(dataTable.getDataTable());
+	}
+	
 	void createRulerTabel(JPanel scrollPanel, JScrollPane scrollPane, JPanel checkBoxesPanel, JFrame frame ) {		
 		String query = "Select number FROM dbassembly.assembly WHERE state=0";			
-		try {			
-			DataTable rulerTable = new DataTable(query);					
-			JTable table = new JTable ( rulerTable.getDataTable() ) ;				
-			scrollPane = new JScrollPane( table );
-			
-			scrollPane.setPreferredSize(new Dimension (230,415));
-			scrollPanel.add( scrollPane );					
-			
-			table.addMouseListener( new MouseListener() {
+		DataTable dataTable = new DataTable(query);					
+		JTable RulerTable = new JTable ( dataTable.getDataTable() ) ;				
+		scrollPane = new JScrollPane( RulerTable );
+		
+		scrollPane.setPreferredSize(new Dimension (230,415));
+		scrollPanel.add( scrollPane );					
+		
+		RulerTable.addMouseListener( new MouseListener() {
 
-				@Override
-				public void mouseClicked( MouseEvent event ) {
+			@Override
+			public void mouseClicked( MouseEvent event ) {
+				
+				removeCheckboxes(checkBoxesPanel, frame);				
+				
+				int row = RulerTable.rowAtPoint( event.getPoint() );
+				int col = RulerTable.columnAtPoint( event.getPoint() );
+				String bill = (String) RulerTable.getValueAt( row, col );					
+				currentBill.setBillNumber(bill);
+				
+				if (row >= 0 && col >= 0 && bill != null) {
+									
+					ArrayList<String> wareHousesList = Warehouse.showWarehousesInWorks( bill );												
+					int i=1;
 					
-					removeCheckboxes(checkBoxesPanel, frame);				
-					
-					int row = table.rowAtPoint( event.getPoint() );
-					int col = table.columnAtPoint( event.getPoint() );
-					String bill = (String) table.getValueAt( row, col );					
-					currentBill.setBillNumber(bill);
-					
-					if (row >= 0 && col >= 0 && bill != null) {
-										
-						ArrayList<String> wareHousesList = Warehouse.showWarehousesInWorks( bill );												
-						int i=1;
-						
-						for( String warehouseName : wareHousesList ) {
-							JCheckBox ch = new JCheckBox( warehouseName );	
-							Element.createElement(ch, checkBoxesPanel, 0, i, 0, false);
-							ch.setName( "chwhwork"+i++ );
-							}
-												
-						frame.repaint();					
-					 }
-				}
-				@Override
-				public void mousePressed(MouseEvent e) {}
-				@Override
-				public void mouseReleased(MouseEvent e) {}
-				@Override
-				public void mouseEntered(MouseEvent e) {}
-				@Override
-				public void mouseExited(MouseEvent e) {}				
-			});
-			
-		} catch( SQLException e1 ) {}
+					for( String warehouseName : wareHousesList ) {
+						JCheckBox ch = new JCheckBox( warehouseName );	
+						Element.createElement(ch, checkBoxesPanel, 0, i, 0, false);
+						ch.setName( "chwhwork"+i++ );
+						}
+											
+					frame.repaint();					
+				 }
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}				
+		});
 	}
 			
 	JTable refreshClientMonitorTab2() {
@@ -122,14 +125,25 @@ public class UIForm {
 			 	+"AND state=0";
 		DataTable dataTable;
 		
-		try {			
-			dataTable = new DataTable(query);			
-			clientMonitorTable.setModel(dataTable.getDataTable());						
-		} catch (SQLException e2) {	e2.printStackTrace(); }
+		dataTable = new DataTable(query);			
+		clientMonitorTable.setModel(dataTable.getDataTable());
 		
 		return clientMonitorTable;
 	}
+	
+	private void cleanTab1(JTextField billNumber,JTextField nameOrganization, JTextField timeBilling) {
+		billNumber.setText( null );
+		nameOrganization.setText( null );
+		timeBilling.setText( null );
 		
+		for( int i=0; i<tab1.getComponentCount(); i++ ) {
+			if( tab1.getComponent(i) instanceof JCheckBox) {
+				JCheckBox ch = (JCheckBox) tab1.getComponent(i);
+				ch.setSelected( false );
+			}
+		} 
+	}
+	
 	public UIForm() {				
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -276,6 +290,7 @@ public class UIForm {
 					}
 					
 					JOptionPane.showMessageDialog(null, "Сборка добавлена!");
+					cleanTab1(billNumber, nameOrganization, timeBilling);
 					connector.closeConnection();
 				}
 				
@@ -291,16 +306,7 @@ public class UIForm {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				billNumber.setText( null );
-				nameOrganization.setText( null );
-				timeBilling.setText( null );
-				
-				for( int i=0; i<tab1.getComponentCount(); i++ ) {
-					if( tab1.getComponent(i) instanceof JCheckBox) {
-						JCheckBox ch = (JCheckBox) tab1.getComponent(i);
-						ch.setSelected( false );
-					}
-				} 
+				cleanTab1(billNumber, nameOrganization, timeBilling);
 			}
 			
 		});

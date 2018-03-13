@@ -17,34 +17,59 @@ public class DataTable {
 		
 	}
 	
-	DefaultTableModel getDataTable() throws SQLException {
+	DefaultTableModel getDataTable()  {
 		MysqlConnector myConnector = new MysqlConnector();
 		ResultSet result;
 		
 		result = myConnector.getData(query);
-		ResultSetMetaData resultSetMetaData = (ResultSetMetaData) result.getMetaData();
+		ResultSetMetaData resultSetMetaData= null;
+		try {
+			resultSetMetaData = (ResultSetMetaData) result.getMetaData();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("1");
+			e.printStackTrace();
+		}
 		
 		
 		/*
 		 * 
 		 * Set Names of columns
 		 */		
-		for (int columnIndex =1; columnIndex<=resultSetMetaData.getColumnCount();columnIndex++) {
-			columnNames.add(resultSetMetaData.getColumnName(columnIndex));		
+		try {
+			for (int columnIndex =1; columnIndex<=resultSetMetaData.getColumnCount();columnIndex++) {
+				columnNames.add(resultSetMetaData.getColumnName(columnIndex));		
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("2");
 		}
 		
 		/*
 		 * 
 		 * Set data for table 
 		 */		
-		while (result.next()) {
-			Vector <Object> data = new Vector<Object>();			
-			for(int columnIndex=1; columnIndex<=resultSetMetaData.getColumnCount(); columnIndex++) {				
-				data.add(result.getObject(columnIndex));					
-			}		
-			table.add(data);
+		try {
+			while (result.next()) {
+				Vector <Object> data = new Vector<Object>();			
+				for(int columnIndex=1; columnIndex<=resultSetMetaData.getColumnCount(); columnIndex++) {				
+					data.add(result.getObject(columnIndex));					
+				}		
+				table.add(data);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("3");
+			e.printStackTrace();
 		}
-		result.close();
+		try {
+			result.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("4");
+			e.printStackTrace();
+		}
 		myConnector.closeConnection();
 		return new DefaultTableModel(table, columnNames);
 	}
