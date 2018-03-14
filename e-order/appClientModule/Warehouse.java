@@ -100,8 +100,7 @@ public class Warehouse {
 	static boolean isBillComplited(String billNumber, String warehouseName){
 		String query ="SELECT * from wh_works where id_assembly = ("
 				+ "Select id_assembly from dbassembly.assembly where number = '"+billNumber+"')";
-//				+ "and id_warehouse = ("
-//				+ "Select id_warehouse from dbassembly.warehouses where wh_name = '"+warehouseName+"')";
+
 		
 		MysqlConnector myConnector = new MysqlConnector();
 		ResultSet resultSet;
