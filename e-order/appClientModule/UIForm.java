@@ -21,9 +21,10 @@ public class UIForm {
 	JScrollPane clientMonitorScrollPane;
 	ResultSet resultset;
 	Bill currentBill = new Bill();	
+	
 	JTable clientMonitorTable = new JTable ();	
 	JTable rulerTable = new JTable();	
-	
+	JScrollPane scrollPane = new JScrollPane();
 			
 	void createCheckBoxes(JPanel tabPanel) {
 		MysqlConnector myConnector = new MysqlConnector();
@@ -69,28 +70,30 @@ public class UIForm {
 	void refreshRulerTabelData() {
 		String query = "Select number FROM dbassembly.assembly WHERE state=0";
 		DataTable dataTable = new DataTable(query);
-		rulerTable.setModel(dataTable.getDataTable());
+		rulerTable.setModel(dataTable.getDataTable()) ;
+	
+		
 	}
 	
 	void createRulerTabel(JPanel scrollPanel, JScrollPane scrollPane, JPanel checkBoxesPanel, JFrame frame ) {		
 		String query = "Select number FROM dbassembly.assembly WHERE state=0";			
 		DataTable dataTable = new DataTable(query);					
-		JTable RulerTable = new JTable ( dataTable.getDataTable() ) ;				
-		scrollPane = new JScrollPane( RulerTable );
+		rulerTable = new JTable ( dataTable.getDataTable() ) ;				
+		scrollPane = new JScrollPane( rulerTable );
 		
 		scrollPane.setPreferredSize(new Dimension (230,415));
 		scrollPanel.add( scrollPane );					
 		
-		RulerTable.addMouseListener( new MouseListener() {
+		rulerTable.addMouseListener( new MouseListener() {
 
 			@Override
 			public void mouseClicked( MouseEvent event ) {
 				
 				removeCheckboxes(checkBoxesPanel, frame);				
 				
-				int row = RulerTable.rowAtPoint( event.getPoint() );
-				int col = RulerTable.columnAtPoint( event.getPoint() );
-				String bill = (String) RulerTable.getValueAt( row, col );					
+				int row = rulerTable.rowAtPoint( event.getPoint() );
+				int col = rulerTable.columnAtPoint( event.getPoint() );
+				String bill = (String) rulerTable.getValueAt( row, col );					
 				currentBill.setBillNumber(bill);
 				
 				if (row >= 0 && col >= 0 && bill != null) {
