@@ -2,8 +2,7 @@
 class Bill {
 	
 	String billNumber;
-	String orgName;
-		
+	String orgName;		
 
 	Bill(String number) { 
 		billNumber=number; 
@@ -27,6 +26,5 @@ class Bill {
 
 	protected void setOrgName(String orgName) {	
 		this.orgName = orgName;	
-		}	
-	
+		}		
 }
