@@ -236,6 +236,7 @@ public class UIForm {
 					newBill.setBillNumber(billNumber.getText());
 					
 					String query;
+					
 					int billingTime = 0;
 					try {
 						billingTime = Integer.parseInt( timeBilling.getText() );
