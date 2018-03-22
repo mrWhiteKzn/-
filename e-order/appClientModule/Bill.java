@@ -27,7 +27,6 @@ class Bill {
 
 	protected void setOrgName(String orgName) {	
 		this.orgName = orgName;	
-		}
-	
+		}	
 	
 }
