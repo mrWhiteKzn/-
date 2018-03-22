@@ -236,8 +236,6 @@ public class UIForm {
 					newBill.setBillNumber(billNumber.getText());
 					
 					String query;
-			//		String orgName = nameOrganization.getText();
-			//		String bNumber = billNumber.getText();
 					int billingTime = 0;
 					try {
 						billingTime = Integer.parseInt( timeBilling.getText() );
