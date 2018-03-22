@@ -1,24 +1,33 @@
 
-public class Bill {
+class Bill {
 	
 	String billNumber;
-	
-	public Bill(String number) {
-		billNumber=number;
-	}
-	
-	public Bill() {
+	String orgName;
 		
-	}
 
-	public String getBillNumber() {
-		return billNumber;
-	}
-
-	public void setBillNumber(String billNumber) {
-		this.billNumber = billNumber;
+	Bill(String number) { 
+		billNumber=number; 
 	}
 	
+	Bill() {
+	}
+
+	protected String getBillNumber() {	
+		return billNumber; 
+		}
+
+	protected void setBillNumber(String billNumber) {	
+		this.billNumber = billNumber;	
+		}
+	
+	
+	protected String getOrgName() {	
+		return orgName;	
+		}
+
+	protected void setOrgName(String orgName) {	
+		this.orgName = orgName;	
+		}
 	
 	
 }

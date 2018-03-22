@@ -70,9 +70,7 @@ public class UIForm {
 	void refreshRulerTabelData() {
 		String query = "Select number FROM dbassembly.assembly WHERE state=0";
 		DataTable dataTable = new DataTable(query);
-		rulerTable.setModel(dataTable.getDataTable()) ;
-	
-		
+		rulerTable.setModel(dataTable.getDataTable()) ;		
 	}
 	
 	void createRulerTabel(JPanel scrollPanel, JScrollPane scrollPane, JPanel checkBoxesPanel, JFrame frame ) {		
@@ -233,9 +231,13 @@ public class UIForm {
 				
 				if(!nameOrganization.getText().isEmpty() && !billNumber.getText().isEmpty()) {
 					
+					Bill newBill = new Bill();
+					newBill.setOrgName(nameOrganization.getText());
+					newBill.setBillNumber(billNumber.getText());
+					
 					String query;
-					String orgName = nameOrganization.getText();
-					String bNumber = billNumber.getText();
+			//		String orgName = nameOrganization.getText();
+			//		String bNumber = billNumber.getText();
 					int billingTime = 0;
 					try {
 						billingTime = Integer.parseInt( timeBilling.getText() );
@@ -247,7 +249,7 @@ public class UIForm {
 					//Проверка наличия сборки					
 					MysqlConnector connector = new MysqlConnector();
 					ResultSet result;
-					result = connector.getData( "Select * from dbassembly.assembly WHERE number = '"+bNumber+"'" );
+					result = connector.getData( "Select * from dbassembly.assembly WHERE number = '"+newBill.getBillNumber()+"'" );
 					try {
 						if ( result.first() ) {
 							JOptionPane.showMessageDialog( null, "Эта сборка уже в базе!" );
@@ -261,17 +263,17 @@ public class UIForm {
 					
 					// Создание клиента, если он новый
 					query = "INSERT INTO dbassembly.clients ( cl_name )"
-											+ "SELECT * FROM(SELECT '"+orgName+"') "
+											+ "SELECT * FROM(SELECT '"+newBill.getOrgName()+"') "
 											+ "AS tmp WHERE NOT EXISTS( "
-																	+ "SELECT cl_name FROM dbassembly.clients WHERE cl_name='"+orgName+"'"
+																	+ "SELECT cl_name FROM dbassembly.clients WHERE cl_name='"+newBill.getOrgName()+"'"
 																	+ ") LIMIT 1;";
 					connector.sendData(query);
 					
 					
 					//Создание сборки
 					query = "INSERT INTO dbassembly.assembly ( number, id_client, startTime, planTime ) "
-							+ "values ('"+bNumber+"',"
-										+ " (SELECT id_client FROM dbassembly.clients WHERE cl_name= '"+orgName+"'),"
+							+ "values ('"+newBill.getOrgName()+"',"
+										+ " (SELECT id_client FROM dbassembly.clients WHERE cl_name= '"+newBill.getOrgName()+"'),"
 										+ " now(),"
 										+ " date_add(now(), INTERVAL "+billingTime+" minute));";					
 					connector.sendData(query);
@@ -282,7 +284,7 @@ public class UIForm {
 							if( ch.isSelected() ) {
 								query = "INSERT INTO dbassembly.wh_works (id_assembly, id_warehouse) "
 										+ "VALUES ( "
-										+ "(SELECT id_assembly FROM dbassembly.assembly WHERE number = '"+bNumber+"'), "
+										+ "(SELECT id_assembly FROM dbassembly.assembly WHERE number = '"+newBill.getOrgName()+"'), "
 										+ "(SELECT id_warehouse FROM dbassembly.warehouses WHERE wh_name = '"+ch.getText()+"'))";	
 								
 								connector.sendData(query);
