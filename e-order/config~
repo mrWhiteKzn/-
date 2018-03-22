@@ -1,0 +1,5 @@
+url 		= 192.168.5.248
+port		= 3306
+dataBase 	= dbassembly
+user		= root
+password 	= 1234567 
