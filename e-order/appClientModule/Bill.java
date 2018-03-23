@@ -1,8 +1,8 @@
 
 class Bill {
 	
-	String billNumber;
-	String orgName;		
+	private String billNumber;
+	private String orgName;		
 
 	Bill(String number) { 
 		billNumber=number; 

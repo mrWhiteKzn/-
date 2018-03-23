@@ -11,7 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.*;
-
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 public class UIForm {	
 	
@@ -260,22 +261,49 @@ public class UIForm {
 					}
 					
 					
-					// Создание клиента, если он новый
-					query = "INSERT INTO dbassembly.clients ( cl_name )"
-											+ "SELECT * FROM(SELECT '"+newBill.getOrgName()+"') "
-											+ "AS tmp WHERE NOT EXISTS( "
-																	+ "SELECT cl_name FROM dbassembly.clients WHERE cl_name='"+newBill.getOrgName()+"'"
-																	+ ") LIMIT 1;";
-					connector.sendData(query);
+					// is client exist in database, if isn't then add him
+					PreparedStatement preparedStatementAddClient;
+					PreparedStatement preparedStatementAddBill;
+					String clientString;
+					String billString;
+					
+					clientString = "INSERT INTO dbassembly.clients ( cl_name )"
+									+ "SELECT * FROM(SELECT ? ) "
+									+ "AS tmp WHERE NOT EXISTS( "
+													+ "SELECT cl_name FROM dbassembly.clients WHERE cl_name= ?"
+													+ ") LIMIT 1;";
+					
+					billString = "INSERT INTO dbassembly.assembly ( number, id_client, startTime, planTime ) "
+								+ "values (?,"
+									+ " (SELECT id_client FROM dbassembly.clients WHERE cl_name= ?),"
+									+ " now(),"
+									+ " date_add(now(), INTERVAL ? minute));";
 					
 					
-					//Создание сборки
-					query = "INSERT INTO dbassembly.assembly ( number, id_client, startTime, planTime ) "
-							+ "values ('"+newBill.getOrgName()+"',"
+					try {
+						preparedStatementAddClient = connector.getMyConnection().prepareStatement(clientString);
+						preparedStatementAddClient.setString(1, newBill.getOrgName());
+						preparedStatementAddClient.setString(2, newBill.getOrgName());
+						
+						preparedStatementAddClient.executeUpdate();
+					
+						preparedStatementAddBill = connector.getMyConnection().prepareStatement(billString);
+						preparedStatementAddBill.setString(1, newBill.getBillNumber());
+						preparedStatementAddBill.setString(2, newBill.getOrgName());
+						preparedStatementAddBill.setInt(3, billingTime);
+						
+						preparedStatementAddBill.executeUpdate();
+					
+					}catch(SQLException e1) {
+						
+					}					
+					
+				/*	query = "INSERT INTO dbassembly.assembly ( number, id_client, startTime, planTime ) "
+							+ "values ('"+newBill.getBillNumber()+"',"
 										+ " (SELECT id_client FROM dbassembly.clients WHERE cl_name= '"+newBill.getOrgName()+"'),"
 										+ " now(),"
 										+ " date_add(now(), INTERVAL "+billingTime+" minute));";					
-					connector.sendData(query);
+					connector.sendData(query);*/
 										
 					for( int i=0; i<tab1.getComponentCount(); i++ ) {
 						if( tab1.getComponent( i ) instanceof JCheckBox ) {					

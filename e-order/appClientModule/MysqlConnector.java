@@ -3,9 +3,9 @@ import java.sql.*;
 import javax.swing.JOptionPane;
  
 
-public class MysqlConnector {
+class MysqlConnector {
 	
-	private Connection myConnection;
+	private Connection myConnection = null;
 	private Statement myStatement;
 	private ResultSet myResultSet;
 	
@@ -17,9 +17,7 @@ public class MysqlConnector {
 			myConnection=DriverManager.getConnection("jdbc:mysql://192.168.5.248:3306/dbassembly","root","1234567");
 			myStatement=myConnection.createStatement();
 		}
-		catch(Exception ex) {
-			System.out.println("Error: "+ex);			
-		}		
+		catch(Exception ex) { System.out.println("Error: "+ex);	}		
 	}
 
 	public ResultSet getData(String queryString) {
@@ -28,9 +26,7 @@ public class MysqlConnector {
 			String query = queryString;
 			myResultSet=myStatement.executeQuery(query);					
 		}
-		catch(Exception ex){
-			System.out.println(ex);			
-		}
+		catch(Exception ex){ System.out.println(ex); }
 		
 		return myResultSet;
 		
@@ -40,18 +36,20 @@ public class MysqlConnector {
 		try {
 			myStatement.executeUpdate(queryString);
 		}
-		catch(Exception ex) {
-			JOptionPane.showMessageDialog(null, "ERROR: "+ex);
-		}
+		catch(Exception ex) { JOptionPane.showMessageDialog(null, "ERROR: "+ex); }
 	}
 
 	public void closeConnection() {
 		try {
 			this.myConnection.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (SQLException e) { 	e.printStackTrace(); }
 	}
 	
+	public Connection getMyConnection() {
+		return myConnection;
+	}
+
+	public void setMyConnection(Connection myConnection) {
+		this.myConnection = myConnection;
+	}
 }
