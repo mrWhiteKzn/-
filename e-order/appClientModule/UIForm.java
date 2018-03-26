@@ -219,7 +219,7 @@ public class UIForm {
 				
 		createCheckBoxes(tab1);
 				
-		// Buttons Реализуй тут динамическое вычисление координаты у!
+		// Buttons 
 		JButton addButton 	= new JButton( "Добавить" );	
 		JButton cleanButton = new JButton( "Очистить" );
 		Element.createElement( cleanButton, tab1, 0, 7, 1, false);
@@ -264,8 +264,10 @@ public class UIForm {
 					// is client exist in database, if isn't then add him
 					PreparedStatement preparedStatementAddClient;
 					PreparedStatement preparedStatementAddBill;
+					PreparedStatement createWarehousesStatement;
 					String clientString;
 					String billString;
+					String workString;					
 					
 					clientString = "INSERT INTO dbassembly.clients ( cl_name )"
 									+ "SELECT * FROM(SELECT ? ) "
@@ -279,6 +281,11 @@ public class UIForm {
 									+ " now(),"
 									+ " date_add(now(), INTERVAL ? minute));";
 					
+
+					workString = "INSERT INTO dbassembly.wh_works (id_assembly, id_warehouse) "
+							+ "VALUES ( "
+							+ "(SELECT id_assembly FROM dbassembly.assembly WHERE number = ?), "
+							+ "(SELECT id_warehouse FROM dbassembly.warehouses WHERE wh_name = ?))";
 					
 					try {
 						preparedStatementAddClient = connector.getMyConnection().prepareStatement(clientString);
@@ -293,33 +300,23 @@ public class UIForm {
 						preparedStatementAddBill.setInt(3, billingTime);
 						
 						preparedStatementAddBill.executeUpdate();
-					
-					}catch(SQLException e1) {
 						
-					}					
-					
-				/*	query = "INSERT INTO dbassembly.assembly ( number, id_client, startTime, planTime ) "
-							+ "values ('"+newBill.getBillNumber()+"',"
-										+ " (SELECT id_client FROM dbassembly.clients WHERE cl_name= '"+newBill.getOrgName()+"'),"
-										+ " now(),"
-										+ " date_add(now(), INTERVAL "+billingTime+" minute));";					
-					connector.sendData(query);*/
-										
-					for( int i=0; i<tab1.getComponentCount(); i++ ) {
-						if( tab1.getComponent( i ) instanceof JCheckBox ) {					
-							JCheckBox ch = (JCheckBox) tab1.getComponent( i );							
-							if( ch.isSelected() ) {
-								query = "INSERT INTO dbassembly.wh_works (id_assembly, id_warehouse) "
-										+ "VALUES ( "
-										+ "(SELECT id_assembly FROM dbassembly.assembly WHERE number = '"+newBill.getOrgName()+"'), "
-										+ "(SELECT id_warehouse FROM dbassembly.warehouses WHERE wh_name = '"+ch.getText()+"'))";	
+						for( int i=0; i<tab1.getComponentCount(); i++ ) {
+							if( tab1.getComponent( i ) instanceof JCheckBox ) {					
+								JCheckBox ch = (JCheckBox) tab1.getComponent( i );	
+								createWarehousesStatement = connector.getMyConnection().prepareStatement(workString);
 								
-								connector.sendData(query);
+							if( ch.isSelected() ) {	
+								createWarehousesStatement.setString(1, newBill.getBillNumber());	
+								createWarehousesStatement.setString(2, ch.getText());							
+		
+								createWarehousesStatement.executeUpdate();
 							}
 							
 						}
 							
-					}
+					}					
+					}catch(SQLException e1) { }	
 					
 					JOptionPane.showMessageDialog(null, "Сборка добавлена!");
 					cleanTab1(billNumber, nameOrganization, timeBilling);
