@@ -2,10 +2,12 @@
 class Bill {
 	
 	private String billNumber;
-	private String orgName;		
+	private String orgName;
+	private int time;
 
-	Bill(String number) { 
-		billNumber=number; 
+	Bill(String billNumber, int time) { 
+		this.billNumber=billNumber;
+		this.time = time;
 	}
 	
 	Bill() {
@@ -26,5 +28,14 @@ class Bill {
 
 	protected void setOrgName(String orgName) {	
 		this.orgName = orgName;	
-		}		
+		}	
+	public int getTime() {
+		return time;
+	}
+
+	public void setTime(int time) {
+		this.time = time;
+	}
+
+	
 }

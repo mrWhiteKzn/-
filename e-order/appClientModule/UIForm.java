@@ -297,7 +297,7 @@ public class UIForm {
 						preparedStatementAddBill = connector.getMyConnection().prepareStatement(billString);
 						preparedStatementAddBill.setString(1, newBill.getBillNumber());
 						preparedStatementAddBill.setString(2, newBill.getOrgName());
-						preparedStatementAddBill.setInt(3, billingTime);
+						preparedStatementAddBill.setInt(3, newBill.getTime());
 						
 						preparedStatementAddBill.executeUpdate();
 						
