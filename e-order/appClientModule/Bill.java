@@ -37,5 +37,9 @@ class Bill {
 		this.time = time;
 	}
 
-	
+	protected void createNewBill(String orgName, String billNumber, int minutes) {
+		this.orgName = orgName;
+		this.billNumber = billNumber;
+		this.time = minutes;
+	}
 }

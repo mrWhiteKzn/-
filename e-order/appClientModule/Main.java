@@ -18,10 +18,10 @@ public class Main {
 				@Override
 				public void run() {					
 					try {
-						while(true) {
-							Thread.sleep(2000);
+						while(true) {							
 							window.refreshClientMonitorTab2();
 							window.refreshRulerTabelData();
+							Thread.sleep(Constants.DATA_REFRESH_RATE);
 						}									
 						
 					} catch (InterruptedException e) {

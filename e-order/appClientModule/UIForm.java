@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.*;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.Timestamp;
 
 public class UIForm {	
 	
@@ -20,7 +20,6 @@ public class UIForm {
 	JTabbedPane tabbedPane;	
 	JPanel tab1, tab2, tab3, tab4;
 	JScrollPane clientMonitorScrollPane;
-	ResultSet resultset;
 	Bill currentBill = new Bill();	
 	
 	JTable clientMonitorTable = new JTable ();	
@@ -69,9 +68,22 @@ public class UIForm {
 	}
 	
 	void refreshRulerTabelData() {
-		String query = "Select number FROM dbassembly.assembly WHERE state=0";
+		String query = "Select number, planTime FROM dbassembly.assembly WHERE state=0";
 		DataTable dataTable = new DataTable(query);
-		rulerTable.setModel(dataTable.getDataTable()) ;		
+		rulerTable.setModel(dataTable.getDataTable());
+	
+		for(int i=0;i<rulerTable.getRowCount();i++) {
+			
+			Timestamp billFinishTime = (Timestamp) rulerTable.getValueAt(i, 1);	
+			java.util.Date now = new java.util.Date();
+			if(billFinishTime.before(now)) {
+				System.out.println("WARNINGS!");
+			} else {
+				System.out.println("GOOD!");
+
+			}
+		}
+		
 	}
 	
 	void createRulerTabel(JPanel scrollPanel, JScrollPane scrollPane, JPanel checkBoxesPanel, JFrame frame ) {		
@@ -230,13 +242,7 @@ public class UIForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if(!nameOrganization.getText().isEmpty() && !billNumber.getText().isEmpty()) {
-					
-					Bill newBill = new Bill();
-					newBill.setOrgName(nameOrganization.getText());
-					newBill.setBillNumber(billNumber.getText());
-					
-					String query;
+				if(!nameOrganization.getText().isEmpty() && !billNumber.getText().isEmpty()) {					
 					
 					int billingTime = 0;
 					try {
@@ -244,7 +250,12 @@ public class UIForm {
 					} catch ( Exception ex ) {
 						JOptionPane.showMessageDialog(null, "Проверьте правильность ввода времени сборки.");
 						return;
-					}
+					}				
+					
+					Bill newBill = new Bill();
+					newBill.createNewBill(nameOrganization.getText(), billNumber.getText(), billingTime);					
+					
+					
 					
 					//Проверка наличия сборки					
 					MysqlConnector connector = new MysqlConnector();
@@ -281,7 +292,7 @@ public class UIForm {
 									+ " now(),"
 									+ " date_add(now(), INTERVAL ? minute));";
 					
-
+					
 					workString = "INSERT INTO dbassembly.wh_works (id_assembly, id_warehouse) "
 							+ "VALUES ( "
 							+ "(SELECT id_assembly FROM dbassembly.assembly WHERE number = ?), "
@@ -300,7 +311,7 @@ public class UIForm {
 						preparedStatementAddBill.setInt(3, newBill.getTime());
 						
 						preparedStatementAddBill.executeUpdate();
-						
+						System.out.println(preparedStatementAddBill.toString());
 						for( int i=0; i<tab1.getComponentCount(); i++ ) {
 							if( tab1.getComponent( i ) instanceof JCheckBox ) {					
 								JCheckBox ch = (JCheckBox) tab1.getComponent( i );	
