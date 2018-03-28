@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 
@@ -71,18 +75,21 @@ public class UIForm {
 		String query = "Select number, planTime FROM dbassembly.assembly WHERE state=0";
 		DataTable dataTable = new DataTable(query);
 		rulerTable.setModel(dataTable.getDataTable());
-	
-		for(int i=0;i<rulerTable.getRowCount();i++) {
+		
+		TimeChangeColorRenderer colorRenderer = new TimeChangeColorRenderer();
+		rulerTable.setDefaultRenderer(Object.class, colorRenderer);
+		
+	/*	for(int i=0;i<rulerTable.getRowCount();i++) {
 			
 			Timestamp billFinishTime = (Timestamp) rulerTable.getValueAt(i, 1);	
 			java.util.Date now = new java.util.Date();
 			if(billFinishTime.before(now)) {
-				System.out.println("WARNINGS!");
+				System.out.println("red");
 			} else {
-				System.out.println("GOOD!");
-
+				
 			}
-		}
+		
+		}*/
 		
 	}
 	
@@ -232,8 +239,8 @@ public class UIForm {
 		createCheckBoxes(tab1);
 				
 		// Buttons 
-		JButton addButton 	= new JButton( "Добавить" );	
-		JButton cleanButton = new JButton( "Очистить" );
+		JButton addButton	= new JButton( "Добавить" );	
+		JButton cleanButton	= new JButton( "Очистить" );
 		Element.createElement( cleanButton, tab1, 0, 7, 1, false);
 		Element.createElement( addButton, tab1, 1, 7, 2, false );	
 				
@@ -252,12 +259,10 @@ public class UIForm {
 						return;
 					}				
 					
-					Bill newBill = new Bill();
-					newBill.createNewBill(nameOrganization.getText(), billNumber.getText(), billingTime);					
+					Bill newBill = new Bill(nameOrganization.getText(), billNumber.getText(), billingTime);
 					
 					
-					
-					//Проверка наличия сборки					
+					//Checking existing the bill in database					
 					MysqlConnector connector = new MysqlConnector();
 					ResultSet result;
 					result = connector.getData( "Select * from dbassembly.assembly WHERE number = '"+newBill.getBillNumber()+"'" );
@@ -383,7 +388,7 @@ public class UIForm {
 		acceptWorkButton.setText( "OK" );				
 	
 		Element.createElement( warehousesLabel, checkBoxesPanel, 0, 0, 0, 0, false, "ABOVE_BASELINE" );	
-		Element.createElement(scrollPanel, tab3, 0, 0, 0, 2, false, "BOTH" );	
+		Element.createElement( scrollPanel, tab3, 0, 0, 0, 2, false, "BOTH" );	
 		Element.createElement( checkBoxesPanel, tab3, 1, 0, 0, 0, false, "BOTH" );		
 		Element.createElement( acceptWorkButton, tab3, 1, 1, 0, 0, false, "SOUTHEAST");
 		
@@ -406,7 +411,7 @@ public class UIForm {
 		JTextField newWarehouseField= new JTextField();
 		JButton addWarehouseButton 	= new JButton();
 		
-		Element.createElement( lbNewWarehouse, tab4, 0, 0, 0, true);
+		Element.createElement( lbNewWarehouse, tab4, 0, 0, 0, true );
 		Element.createElement( newWarehouseField, tab4, 1, 0, 0, true );
 		Element.createElement( addWarehouseButton, tab4, 0, 1, 0, true);	
 		

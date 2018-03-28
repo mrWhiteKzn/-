@@ -5,41 +5,36 @@ class Bill {
 	private String orgName;
 	private int time;
 
+	Bill() {
+	}
+	
 	Bill(String billNumber, int time) { 
 		this.billNumber=billNumber;
 		this.time = time;
 	}
 	
-	Bill() {
+	Bill(String orgName, String billNumber, int time) {
+		this.orgName = orgName;
+		this.billNumber = billNumber;
+		this.time = time;
 	}
 
 	protected String getBillNumber() {	
 		return billNumber; 
-		}
+	}
 
 	protected void setBillNumber(String billNumber) {	
 		this.billNumber = billNumber;	
-		}
+	}
 	
 	
 	protected String getOrgName() {	
-		return orgName;	
-		}
+		return orgName;
+	}
 
-	protected void setOrgName(String orgName) {	
-		this.orgName = orgName;	
-		}	
 	public int getTime() {
 		return time;
 	}
+	
 
-	public void setTime(int time) {
-		this.time = time;
-	}
-
-	protected void createNewBill(String orgName, String billNumber, int minutes) {
-		this.orgName = orgName;
-		this.billNumber = billNumber;
-		this.time = minutes;
-	}
 }
