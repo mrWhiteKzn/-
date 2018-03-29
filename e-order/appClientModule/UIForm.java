@@ -1,5 +1,3 @@
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,10 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-
 import java.sql.PreparedStatement;
-import java.sql.Timestamp;
 
 public class UIForm {	
 	
@@ -29,6 +24,11 @@ public class UIForm {
 	JTable clientMonitorTable = new JTable ();	
 	JTable rulerTable = new JTable();	
 	JScrollPane scrollPane = new JScrollPane();
+	ClientMonitor monitorTable;
+	
+	void refreshClientMonitor(){
+		monitorTable.refreshClientMonitorTab2();
+	}
 			
 	void createCheckBoxes(JPanel tabPanel) {
 		MysqlConnector myConnector = new MysqlConnector();
@@ -77,20 +77,7 @@ public class UIForm {
 		rulerTable.setModel(dataTable.getDataTable());
 		
 		TimeChangeColorRenderer colorRenderer = new TimeChangeColorRenderer();
-		rulerTable.setDefaultRenderer(Object.class, colorRenderer);
-		
-	/*	for(int i=0;i<rulerTable.getRowCount();i++) {
-			
-			Timestamp billFinishTime = (Timestamp) rulerTable.getValueAt(i, 1);	
-			java.util.Date now = new java.util.Date();
-			if(billFinishTime.before(now)) {
-				System.out.println("red");
-			} else {
-				
-			}
-		
-		}*/
-		
+		rulerTable.setDefaultRenderer(Object.class, colorRenderer);		
 	}
 	
 	void createRulerTabel(JPanel scrollPanel, JScrollPane scrollPane, JPanel checkBoxesPanel, JFrame frame ) {		
@@ -137,19 +124,6 @@ public class UIForm {
 			@Override
 			public void mouseExited(MouseEvent e) {}				
 		});
-	}
-			
-	JTable refreshClientMonitorTab2() {
-		String query ="SELECT  cl_name, number, planTime "  
-			 	+"FROM dbassembly.assembly, dbassembly.clients "  
-			 	+"WHERE dbassembly.assembly.id_client = dbassembly.clients.id_client " 
-			 	+"AND state=0";
-		DataTable dataTable;
-		
-		dataTable = new DataTable(query);			
-		clientMonitorTable.setModel(dataTable.getDataTable());
-		
-		return clientMonitorTable;
 	}
 	
 	private void cleanTab1(JTextField billNumber,JTextField nameOrganization, JTextField timeBilling) {
@@ -366,8 +340,8 @@ public class UIForm {
 		 * 
 		 * 
 		 * */		
-		refreshClientMonitorTab2();
-		tab2.add(clientMonitorTable);	
+		monitorTable = new ClientMonitor(tab2);		
+		//tab2.add(monitorTable.refreshClientMonitorTab2());	
 		
 		/**
 		 * 

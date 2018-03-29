@@ -3,6 +3,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import com.mysql.jdbc.ResultSetMetaData;
 
@@ -13,11 +14,15 @@ public class DataTable {
 	Vector <Object> table 		= new Vector<Object>();	
 	
 	public DataTable(String query) {
-		this.query = query;		
+		this.query = query;				
+	}
+	
+	static TableModel resultSetToTableModel(ResultSet rs) {
+		return null;
 		
 	}
 	
-	DefaultTableModel getDataTable()  {
+ 	DefaultTableModel getDataTable()  {
 		MysqlConnector myConnector = new MysqlConnector();
 		ResultSet result;
 		
@@ -25,12 +30,7 @@ public class DataTable {
 		ResultSetMetaData resultSetMetaData= null;
 		try {
 			resultSetMetaData = (ResultSetMetaData) result.getMetaData();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("1");
-			e.printStackTrace();
-		}
-		
+		} catch (SQLException e) { e.printStackTrace();	}
 		
 		/*
 		 * 
@@ -40,11 +40,7 @@ public class DataTable {
 			for (int columnIndex =1; columnIndex<=resultSetMetaData.getColumnCount();columnIndex++) {
 				columnNames.add(resultSetMetaData.getColumnName(columnIndex));		
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("2");
-		}
+		} catch (SQLException e) { e.printStackTrace();	}
 		
 		/*
 		 * 
@@ -58,18 +54,12 @@ public class DataTable {
 				}		
 				table.add(data);
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("3");
-			e.printStackTrace();
-		}
+		} catch (SQLException e) {	e.printStackTrace(); }
+		
 		try {
 			result.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("4");
-			e.printStackTrace();
-		}
+		} catch (SQLException e) {	e.printStackTrace(); }
+		
 		myConnector.closeConnection();
 		return new DefaultTableModel(table, columnNames);
 	}

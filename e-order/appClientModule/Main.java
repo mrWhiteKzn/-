@@ -17,7 +17,7 @@ public class Main {
 				public void run() {					
 					try {
 						while(true) {							
-							window.refreshClientMonitorTab2();
+							window.refreshClientMonitor();							
 							window.refreshRulerTabelData();
 							Thread.sleep(Constants.DATA_REFRESH_RATE);
 						}									
