@@ -17,9 +17,45 @@ public class DataTable {
 		this.query = query;				
 	}
 	
-	static TableModel resultSetToTableModel(ResultSet rs) {
-		return null;
+	public DataTable() {
 		
+	}
+	
+	TableModel queryToTableModel(String queryString) {
+		
+		MysqlConnector myConnector = new MysqlConnector();
+		ResultSet result;
+		
+		result = myConnector.getData(queryString);
+		ResultSetMetaData resultSetMetaData= null;
+		try {
+			resultSetMetaData = (ResultSetMetaData) result.getMetaData();
+		
+		/*
+		 * 
+		 * Set Names of columns
+		 */			
+		for (int columnIndex =1; columnIndex<=resultSetMetaData.getColumnCount();columnIndex++) {
+				columnNames.add(resultSetMetaData.getColumnName(columnIndex));		
+		}
+		
+		/*
+		 * 
+		 * Set data for table 
+		 */		
+		while (result.next()) {
+			Vector <Object> data = new Vector<Object>();			
+			for(int columnIndex=1; columnIndex<=resultSetMetaData.getColumnCount(); columnIndex++) {				
+				data.add(result.getObject(columnIndex));					
+			}		
+			table.add(data);
+		}
+		
+			result.close();
+		} catch (SQLException e) {	e.printStackTrace(); }
+		
+		myConnector.closeConnection();
+		return new DefaultTableModel(table, columnNames);
 	}
 	
  	DefaultTableModel getDataTable()  {
