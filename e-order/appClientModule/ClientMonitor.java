@@ -1,24 +1,28 @@
+import java.sql.ResultSet;
+
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
-class ClientMonitor {
+class ClientMonitor implements Monitor {
 	JTable clientMonitorTable = new JTable();
-	DataTable dataTable; 
+//DataTable dataTable = new DataTable();; 
 	
 	ClientMonitor(JPanel tab2){
-		tab2.add(clientMonitorTable);
-		
+		tab2.add(clientMonitorTable);		
 	}
-	
-	void refreshClientMonitorTab2() {
+
+	@Override
+	public void refreshData() {
 		String query ="SELECT  cl_name, number, planTime "  
-			 	+"FROM dbassembly.assembly, dbassembly.clients "  
-			 	+"WHERE dbassembly.assembly.id_client = dbassembly.clients.id_client " 
-			 	+"AND state=0";
+			 			+"FROM dbassembly.assembly, dbassembly.clients "  
+			 			+"WHERE dbassembly.assembly.id_client = dbassembly.clients.id_client " 
+			 			+"AND state=0";
+				
+		MysqlConnector myConnector = new MysqlConnector();
+		ResultSet result;
 		
+		result = myConnector.getData(query);		
 		
-		dataTable = new DataTable();			
-		clientMonitorTable.setModel(dataTable.queryToTableModel(query));
-		
+		clientMonitorTable.setModel(DBUtils.resultSetToTableBodel(result));
 	}	
 }

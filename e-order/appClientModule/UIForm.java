@@ -25,11 +25,16 @@ public class UIForm {
 	JTable rulerTable = new JTable();	
 	JScrollPane scrollPane = new JScrollPane();
 	ClientMonitor monitorTable;
+	RulerMonitor rulerMonitor;
 	
 	void refreshClientMonitor(){
-		monitorTable.refreshClientMonitorTab2();
+		monitorTable.refreshData();
 	}
-			
+	
+	void refreshRulerTabelData() {
+		rulerMonitor.refreshData();
+	}	
+	
 	void createCheckBoxes(JPanel tabPanel) {
 		MysqlConnector myConnector = new MysqlConnector();
 		ResultSet warehouses;	
@@ -60,7 +65,7 @@ public class UIForm {
 		myConnector.closeConnection();
 	}
 	
-	void removeCheckboxes(JPanel currentPanel, JFrame currentFrame) {
+	static void removeCheckboxes(JPanel currentPanel, JFrame currentFrame) {
 		
 		for( int i=0; i<currentPanel.getComponentCount(); i++ ) {			
 			if( currentPanel.getComponent( i ) instanceof JCheckBox ) {				
@@ -69,61 +74,6 @@ public class UIForm {
 			}			
 		}
 		currentPanel.updateUI();
-	}
-	
-	void refreshRulerTabelData() {
-		String query = "Select number, planTime FROM dbassembly.assembly WHERE state=0";
-		DataTable dataTable = new DataTable(query);
-		rulerTable.setModel(dataTable.getDataTable());
-		
-		TimeChangeColorRenderer colorRenderer = new TimeChangeColorRenderer();
-		rulerTable.setDefaultRenderer(Object.class, colorRenderer);		
-	}
-	
-	void createRulerTabel(JPanel scrollPanel, JScrollPane scrollPane, JPanel checkBoxesPanel, JFrame frame ) {		
-		String query = "Select number FROM dbassembly.assembly WHERE state=0";			
-		DataTable dataTable = new DataTable(query);					
-		rulerTable = new JTable ( dataTable.getDataTable() ) ;				
-		scrollPane = new JScrollPane( rulerTable );
-		
-		scrollPane.setPreferredSize(new Dimension (230,415));
-		scrollPanel.add( scrollPane );					
-		
-		rulerTable.addMouseListener( new MouseListener() {
-
-			@Override
-			public void mouseClicked( MouseEvent event ) {
-				
-				removeCheckboxes(checkBoxesPanel, frame);				
-				
-				int row = rulerTable.rowAtPoint( event.getPoint() );
-				int col = rulerTable.columnAtPoint( event.getPoint() );
-				String bill = (String) rulerTable.getValueAt( row, col );					
-				currentBill.setBillNumber(bill);
-				
-				if (row >= 0 && col >= 0 && bill != null) {
-									
-					ArrayList<String> wareHousesList = Warehouse.showWarehousesInWorks( bill );												
-					int i=1;
-					
-					for( String warehouseName : wareHousesList ) {
-						JCheckBox ch = new JCheckBox( warehouseName );	
-						Element.createElement(ch, checkBoxesPanel, 0, i, 0, false);
-						ch.setName( "chwhwork"+i++ );
-						}
-											
-					frame.repaint();					
-				 }
-			}
-			@Override
-			public void mousePressed(MouseEvent e) {}
-			@Override
-			public void mouseReleased(MouseEvent e) {}
-			@Override
-			public void mouseEntered(MouseEvent e) {}
-			@Override
-			public void mouseExited(MouseEvent e) {}				
-		});
 	}
 	
 	private void cleanTab1(JTextField billNumber,JTextField nameOrganization, JTextField timeBilling) {
@@ -331,8 +281,6 @@ public class UIForm {
 		});
 	
 		
-	
-		
 		/** SECTION PANEL#2 
 		 * 
 		 * 
@@ -355,7 +303,7 @@ public class UIForm {
 		JButton acceptWorkButton= new JButton();		
 		JPanel checkBoxesPanel 	= new JPanel();
 		
-		createRulerTabel(scrollPanel, scrollPane, checkBoxesPanel, frame );
+		rulerMonitor = new RulerMonitor(scrollPanel, scrollPane, checkBoxesPanel, frame, rulerTable, currentBill );
 		
 		checkBoxesPanel.setLayout( new GridBagLayout() );			
 		warehousesLabel = new JLabel( "Склады:" );
