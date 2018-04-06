@@ -34,8 +34,7 @@ public class TimeChangeColorRenderer implements TableCellRenderer{
 				c.setBackground(Constants.TIME_EXPIRED_COLOR);				
 			} else {
 				c.setBackground(null);
-			}
-			System.out.println("Time: "+time + " Now: " + now);
+			}			
 		}		
 		return c;
 	}

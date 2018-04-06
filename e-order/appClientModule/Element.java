@@ -48,10 +48,6 @@ public class Element {
 		else if (gridBagConstraints.equals("SOUTHEAST")) {
 			c.fill = GridBagConstraints.SOUTHEAST;
 		}
-		else if (gridBagConstraints.equals("NORTH")) {
-			c.fill = GridBagConstraints.NORTH;
-		}
-		
 		else if (gridBagConstraints.equals("ABOVE_BASELINE")) {
 			//c.fill = GridBagConstraints.NORTHWEST;
 		}
