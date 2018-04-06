@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Scanner;
 
-public class RunController {
+public class StartController {
 	
 	String url 		= null;
 	String ipAddr 	= null;
@@ -14,7 +14,7 @@ public class RunController {
 	String user		= null;
 	String password	= null;		
 	
-	public RunController() {	
+	public StartController() {	
 		
 	}
 	

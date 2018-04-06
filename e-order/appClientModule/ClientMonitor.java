@@ -1,11 +1,11 @@
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
 class ClientMonitor implements Monitor {
-	JTable clientMonitorTable = new JTable();
-//DataTable dataTable = new DataTable();; 
+	JTable clientMonitorTable = new JTable(); 
 	
 	ClientMonitor(JPanel tab2){
 		tab2.add(clientMonitorTable);		
@@ -24,5 +24,7 @@ class ClientMonitor implements Monitor {
 		result = myConnector.getData(query);		
 		
 		clientMonitorTable.setModel(DBUtils.resultSetToTableBodel(result));
+		
+		myConnector.closeConnection();
 	}	
 }

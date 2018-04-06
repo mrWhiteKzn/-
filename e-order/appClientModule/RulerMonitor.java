@@ -65,13 +65,10 @@ public class RulerMonitor implements Monitor{
 		ResultSet result;
 		
 		result = myConnector.getData(query);	
-		
-		
 
-		rulerTable.setModel(DBUtils.resultSetToTableBodel(result));
+		rulerTable.setModel(DBUtils.resultSetToTableBodel(result));	
+		rulerTable.getColumnModel().getColumn(1).setCellRenderer(new TimeChangeColorRenderer());
 		
-		TimeChangeColorRenderer colorRenderer = new TimeChangeColorRenderer();
-		rulerTable.setDefaultRenderer(Object.class, colorRenderer);
+		myConnector.closeConnection();
 	}
-
 }

@@ -1,11 +1,11 @@
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
-
 
 public class DBUtils {
 	public static TableModel resultSetToTableBodel(ResultSet resultset) {
@@ -16,7 +16,16 @@ public class DBUtils {
 			
 			//Get column names
 			for(int column = 0; column < countOfColumns; column++) {
-				columnNames.addElement(metaData.getColumnName(column+1));
+				if(metaData.getColumnName(column+1).equals("number")) {
+					columnNames.addElement("Номер сборки");
+				}
+				else if(metaData.getColumnName(column+1).equals("planTime")){
+					columnNames.addElement("Время готовности");
+				}
+				else {
+					columnNames.addElement(metaData.getColumnName(column+1));
+				}
+				
 			}
 			
 			//Get all rows
@@ -26,7 +35,14 @@ public class DBUtils {
 				Vector newRow = new Vector();
 				
 				for(int i =1; i<= countOfColumns; i++) {
-					newRow.addElement(resultset.getObject(i));
+					if(resultset.getObject(i) instanceof Timestamp) {
+						Timestamp time = (Timestamp) resultset.getObject(i);						
+						newRow.addElement(convertTimeFormat(time));
+					}
+					else {
+						newRow.addElement(resultset.getObject(i));
+					}					
+					
 				}
 				rows.addElement(newRow);
 			}
@@ -37,5 +53,10 @@ public class DBUtils {
 			e.printStackTrace();
 		}
 		return null;		
+	}
+	static String convertTimeFormat(Timestamp time){		
+		SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm:ss");		
+		String formattedTime = outputFormat.format(time);	
+		return formattedTime;
 	}
 }
